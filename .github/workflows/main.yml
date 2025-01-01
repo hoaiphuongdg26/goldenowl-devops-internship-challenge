@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           ls -la ./src 
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-app-go:${{ github.sha }} ./src
+          docker buildx build --platform linux/amd64 -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-app-go:${{ github.sha }} ./src
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/node-app-go:${{ github.sha }}
 
       - name: Get GKE credentials

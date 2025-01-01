@@ -71,13 +71,17 @@ resource "google_container_cluster" "primary" {
   }
 
   master_authorized_networks_config {
+    # cidr_blocks {
+    #   cidr_block   = "116.110.43.12/32"
+    #   display_name = "My IP"
+    # }
+    # cidr_blocks {
+    #   cidr_block   = var.subnet_cidr
+    #   display_name = "VPC"
+    # }
     cidr_blocks {
-      cidr_block   = "116.110.43.12/32"
-      display_name = "My IP"
-    }
-    cidr_blocks {
-      cidr_block   = var.subnet_cidr
-      display_name = "VPC"
+        cidr_block   = "0.0.0.0/0"
+        display_name = "Allow all"
     }
   }
 
@@ -177,14 +181,28 @@ resource "kubernetes_deployment" "app" {
           image = var.docker_image
           name  = "node-app-go"
 
+          args = [
+            "--platform=linux/amd64"
+          ]
+
           port {
             container_port = 3000
+          }
+
+          env {
+            name  = "HOST"
+            value = "0.0.0.0"
+          }
+
+          env {
+            name  = "PORT"
+            value = "3000"
           }
 
           # Add liveness probe
           liveness_probe {
             http_get {
-              path = "/health"
+              path = "/"
               port = 3000
             }
             initial_delay_seconds = 30
@@ -194,7 +212,7 @@ resource "kubernetes_deployment" "app" {
           # Add readiness probe
           readiness_probe {
             http_get {
-              path = "/ready"
+              path = "/"
               port = 3000
             }
             initial_delay_seconds = 5
