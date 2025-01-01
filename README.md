@@ -1,45 +1,73 @@
-# Golden Owl DevOps Internship - Technical Test
-At Golden Owl, we believe in treating infrastructure as code and automating resource provisioning to the fullest extent possible. 
+# Golden Owl DevOps Internship - Node.js Application Deployment with GKE
 
-In this technical test, we challenge you to create a robust CI build pipeline using GitHub Actions. You have the freedom to complete this test in your local environment.
+This project demonstrates a complete CI/CD pipeline for deploying a Node.js application to Google Kubernetes Engine (GKE) using GitHub Actions and Terraform.
 
-## Your Mission 🌟
-Your mission, should you choose to accept it, is to craft a CI job that:
-1. Forks this repository to your personal GitHub account.
-2. Dockerizes a Node.js application.
-3. Establishes an automated CI/CD build process using GitHub Actions workflow and a container registry service such as DockerHub or Amazon Elastic Container Registry (ECR) or similar services.
-4. Initiates CI tests automatically when changes are pushed to the feature branch on GitHub.
-5. Utilizes GitHub Actions for Continuous Deployment (CD) to deploy the application to major cloud providers like AWS EC2, AWS ECS or Google Cloud (please submit the deployment link).
-## Nice to have 🎨
-We would be genuinely delighted if you could complement your submission with a `visual flow diagram`, illustrating the sequence of tasks you performed, including the implementation of a `load balancer` and `auto scaling` for the deployed application. This additional touch would greatly enhance our understanding and appreciation of your work.
+## Infrastructure Overview
 
-Reference tools for creating visual flow diagrams:
-- https://www.drawio.com/
-- https://excalidraw.com/
-- https://www.eraser.io/
-  
-Including a visual representation of your workflow will provide valuable insights into your approach and make your submission stand out. Thank you for considering this enhancement! 
-## The Bigger Picture 🌏
-This test is designed to evaluate your ability to implement modern automated infrastructure practices while demonstrating a basic understanding of Docker containers. In your solution, we encourage you to prioritize readability, maintainability, and the principles of DevOps.
+- VPC Network with custom subnet and private Google access
 
- ## Submission Guidelines 📬
-Your solution should be showcased in a public GitHub repository. We encourage you to commit early and often. We prefer to see a history of iterative progress rather than a single massive push. When you've completed the assignment, kindly share the URL of your repository with us.
+- GKE Cluster configuration:
+  - VPC-native networking
+  - Workload identity enabled
+  - Network policy with Calico
+  - Private cluster capability
+  - Regular release channel for updates
 
- ## Running the Node.js Application Locally  🏃‍♂️
- This is a Node.js application, and running it locally is straightforward:
-- Navigate to the `src` directory by executing `cd src`.
-- Install the project's dependencies listed in the package.json file by running `npm i`.
-- Execute `npm test` to run the application's tests.
-- Start the HTTP server with `npm start`.
+- Node Pool features:
+  - Spot instances for cost optimization
+  - Autoscaling (1-10 nodes)
+  - Automatic upgrades and repairs
+  - COS_CONTAINERD image type
 
-You can test it using the following command:
-  
-```shell
-curl localhost:3000
+- Kubernetes Resources:
+  - Deployment with health probes
+  - Horizontal Pod Autoscaler (CPU-based)
+  - LoadBalancer Service
+
+![deploy-node-app-go.drawio.svg](deploy-node-app-go.drawio.svg)
+
+## CI/CD Pipeline
+### Continuous Integration (CI)
+- Triggers on:
+  - Push to master branch
+  - Pull request to master
+  - Manual workflow dispatch
+
+- Build Stage:
+  - Checks out code
+  - Authenticates with Google Cloud
+  - Builds Docker image
+  - Pushes to Google Container Registry
+
+### Continuous Deployment (CD)
+- Deploy Stage:
+  - Authenticates with GKE cluster
+  - Updates deployment with new image
+  - Zero-downtime rolling updates
+
+### Prerequisites
+- Google Cloud Platform account
+- GitHub repository
+- Google Cloud SDK
+- Terraform CLI
+
+### Setup steps
+1. Configure GitHub Secrets
+```angular2html
+GCP_SA_KEY           # Google Cloud Service Account key
+GCP_PROJECT_ID       # Google Cloud Project ID
+GCP_ZONE            # GKE cluster zone
 ```
-You should receive the following response:
-```json
-{"message":"Welcome warriors to Golden Owl!"}
+2. Deploy Infrastructure
+```angular2html
+cd infras
+terraform init
+terraform plan
+terraform apply
 ```
+3. Run CI/CD Pipeline
 
-Are you ready to embark on this DevOps journey with us? 🚀 Best of luck with your assignment! 🌟
+Run the GitHub Actions workflow manually or push to master branch:
+```angular2html
+git push origin master
+```

@@ -181,22 +181,8 @@ resource "kubernetes_deployment" "app" {
           image = var.docker_image
           name  = "node-app-go"
 
-          args = [
-            "--platform=linux/amd64"
-          ]
-
           port {
             container_port = 3000
-          }
-
-          env {
-            name  = "HOST"
-            value = "0.0.0.0"
-          }
-
-          env {
-            name  = "PORT"
-            value = "3000"
           }
 
           # Add liveness probe

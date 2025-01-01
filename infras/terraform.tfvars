@@ -3,7 +3,7 @@ project_id    = "node-app-go"
 region        = "asia-southeast1"
 zone          = "asia-southeast1-a"
 environment   = "dev"
-docker_image  = "docker.io/hoaiphuongdg26/node-app-go:latest"
+docker_image  = "gcr.io/node-app-go/node-app-go"
 
 # Cấu hình cluster
 cluster_name    = "optimized-cluster"
